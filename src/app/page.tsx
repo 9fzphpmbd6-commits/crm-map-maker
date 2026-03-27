@@ -66,14 +66,14 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 0 1 15 0Z" />
           </svg>
-          CRM Map Maker
+          PinWhip
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          Turn CRM Exports into Google Maps in 30 Seconds
+          Drop CRM Contacts on a Map in Seconds
         </h1>
         <p className="mt-3 text-sm text-gray-500 max-w-xl mx-auto leading-relaxed">
-          Upload a CSV, map your columns, download a Google My Maps-ready file.
-          No login, no setup.
+          Upload a CSV from any CRM, map your columns, and download a file
+          ready for Google My Maps. No login, no setup.
         </p>
       </div>
 

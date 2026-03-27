@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CRM Map Maker — Turn CRM Exports into Google Maps",
+  title: "PinWhip — Drop CRM Contacts on a Map in Seconds",
   description:
-    "Upload a CSV, map your columns, and download a Google My Maps-ready file. No login, no setup.",
+    "Upload a CSV from any CRM, map your columns, and download a Google My Maps-ready file. No login, no setup.",
   openGraph: {
-    title: "CRM Map Maker",
+    title: "PinWhip",
     description:
-      "Turn CRM exports into Google Maps pins in 30 seconds. Free, no login required.",
+      "Drop CRM contacts on a Google Map in seconds. Free, no login required.",
     type: "website",
   },
 };
