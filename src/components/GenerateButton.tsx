@@ -2,18 +2,41 @@
 
 import { useState } from "react";
 import { validateMapping, type MappingConfig } from "@/lib/mapping";
+import { transformRows } from "@/lib/csv";
 
 type Props = {
   rows: Record<string, string>[];
   mapping: MappingConfig;
 };
 
+const OUTPUT_HEADERS = [
+  "Name",
+  "Address",
+  "City",
+  "State",
+  "ZIP",
+  "Country",
+  "Type",
+  "Rep",
+] as const;
+
+function escapeCSVField(value: string): string {
+  if (
+    value.includes(",") ||
+    value.includes('"') ||
+    value.includes("\n") ||
+    value.includes("\r")
+  ) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
 export default function GenerateButton({ rows, mapping }: Props) {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     setError(null);
     setSuccess(false);
 
@@ -23,23 +46,18 @@ export default function GenerateButton({ rows, mapping }: Props) {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const res = await fetch("/api/convert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rows, mapping }),
-      });
+      const outputRows = transformRows(rows, mapping);
 
-      if (!res.ok) {
-        const json = await res.json().catch(() => null);
-        setError(json?.error ?? `Server error (${res.status}).`);
-        setLoading(false);
-        return;
-      }
+      // Build CSV string
+      const headerLine = OUTPUT_HEADERS.join(",");
+      const dataLines = outputRows.map((row) =>
+        OUTPUT_HEADERS.map((h) => escapeCSVField(row[h] ?? "")).join(",")
+      );
+      const csvString = [headerLine, ...dataLines].join("\r\n") + "\r\n";
 
-      const blob = await res.blob();
+      // Trigger download
+      const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -52,8 +70,6 @@ export default function GenerateButton({ rows, mapping }: Props) {
       setSuccess(true);
     } catch {
       setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -61,40 +77,13 @@ export default function GenerateButton({ rows, mapping }: Props) {
     <div className="space-y-3">
       <button
         onClick={handleGenerate}
-        disabled={loading}
         className="w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white
                    shadow-sm transition-all duration-200
                    hover:bg-brand-700 hover:shadow-md
-                   focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2
-                   disabled:opacity-50 disabled:cursor-not-allowed"
+                   focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2"
         data-testid="generate-button"
       >
-        {loading ? (
-          <span className="flex items-center justify-center gap-2">
-            <svg
-              className="h-4 w-4 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-            Generating…
-          </span>
-        ) : (
-          "Generate My Maps File"
-        )}
+        Generate My Maps File
       </button>
 
       {error && (
