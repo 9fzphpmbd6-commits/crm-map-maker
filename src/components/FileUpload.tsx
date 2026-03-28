@@ -11,7 +11,6 @@ export default function FileUpload({ onParsed }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
 
   const parseFile = useCallback(
     (file: File) => {
@@ -21,8 +20,6 @@ export default function FileUpload({ onParsed }: Props) {
         setError("Please upload a .csv file.");
         return;
       }
-
-      setFileName(file.name);
 
       Papa.parse<Record<string, string>>(file, {
         header: true,
@@ -76,12 +73,12 @@ export default function FileUpload({ onParsed }: Props) {
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         className={`
-          relative cursor-pointer rounded-xl border-2 border-dashed px-6 py-12
+          relative cursor-pointer rounded-xl border-2 border-dashed px-6 py-10
           text-center transition-all duration-200
           ${
             dragging
-              ? "border-brand-500 bg-brand-50"
-              : "border-gray-300 bg-white hover:border-brand-400 hover:bg-gray-50"
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 bg-white hover:border-blue-400 hover:bg-gray-50"
           }
         `}
         data-testid="drop-zone"
@@ -95,10 +92,9 @@ export default function FileUpload({ onParsed }: Props) {
           data-testid="file-input"
         />
 
-        <div className="pointer-events-none space-y-2">
-          {/* Upload icon */}
+        <div className="pointer-events-none space-y-1.5">
           <svg
-            className="mx-auto h-10 w-10 text-gray-400"
+            className="mx-auto h-8 w-8 text-gray-400"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
@@ -110,18 +106,14 @@ export default function FileUpload({ onParsed }: Props) {
               d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
             />
           </svg>
-          <p className="text-sm font-medium text-gray-700">
-            Drag & drop your CSV here, or{" "}
-            <span className="text-brand-600 underline">browse</span>
+          <p className="text-sm text-gray-600">
+            Drag & drop or{" "}
+            <span className="text-blue-600 underline font-medium">browse</span>
           </p>
-          <p className="text-xs text-gray-400">Accepts .csv files only</p>
+          <p className="text-[11px] text-gray-400">
+            .csv files up to 5,000 rows
+          </p>
         </div>
-
-        {fileName && (
-          <p className="mt-3 text-xs font-medium text-brand-700">
-            Loaded: {fileName}
-          </p>
-        )}
       </div>
 
       {error && (

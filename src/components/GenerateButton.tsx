@@ -7,6 +7,7 @@ import { transformRows } from "@/lib/csv";
 type Props = {
   rows: Record<string, string>[];
   mapping: MappingConfig;
+  onGenerated?: () => void;
 };
 
 const OUTPUT_HEADERS = [
@@ -32,7 +33,7 @@ function escapeCSVField(value: string): string {
   return value;
 }
 
-export default function GenerateButton({ rows, mapping }: Props) {
+export default function GenerateButton({ rows, mapping, onGenerated }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -49,14 +50,12 @@ export default function GenerateButton({ rows, mapping }: Props) {
     try {
       const outputRows = transformRows(rows, mapping);
 
-      // Build CSV string
       const headerLine = OUTPUT_HEADERS.join(",");
       const dataLines = outputRows.map((row) =>
         OUTPUT_HEADERS.map((h) => escapeCSVField(row[h] ?? "")).join(",")
       );
       const csvString = [headerLine, ...dataLines].join("\r\n") + "\r\n";
 
-      // Trigger download
       const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -68,6 +67,7 @@ export default function GenerateButton({ rows, mapping }: Props) {
       URL.revokeObjectURL(url);
 
       setSuccess(true);
+      onGenerated?.();
     } catch {
       setError("Something went wrong. Please try again.");
     }
@@ -77,10 +77,10 @@ export default function GenerateButton({ rows, mapping }: Props) {
     <div className="space-y-3">
       <button
         onClick={handleGenerate}
-        className="w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white
+        className="w-full rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white
                    shadow-sm transition-all duration-200
-                   hover:bg-brand-700 hover:shadow-md
-                   focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2"
+                   hover:bg-blue-700 hover:shadow-md
+                   focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
         data-testid="generate-button"
       >
         Generate My Maps File
@@ -97,10 +97,14 @@ export default function GenerateButton({ rows, mapping }: Props) {
 
       {success && (
         <div
-          className="rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-700"
+          className="rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 text-sm text-green-700 text-center"
           data-testid="generate-success"
         >
           CSV generated! Your download should begin automatically.
+          <br />
+          <span className="text-xs text-green-600">
+            Scroll down to open Google My Maps and import it.
+          </span>
         </div>
       )}
     </div>
