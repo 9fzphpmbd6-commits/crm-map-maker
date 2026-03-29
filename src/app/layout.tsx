@@ -10,6 +10,21 @@ export const metadata: Metadata = {
     description:
       "Drop CRM contacts on a Google Map in seconds. 100% free, no login required.",
     type: "website",
+    images: [
+      {
+        url: "https://pinwhip.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "PinWhip — CRM contacts on a Google Map in seconds",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PinWhip — CRM contacts on a map. In seconds.",
+    description:
+      "Upload a CSV from any CRM, auto-map columns, download a Google My Maps file. 100% free, no login.",
+    images: ["https://pinwhip.com/og-image.png"],
   },
 };
 
